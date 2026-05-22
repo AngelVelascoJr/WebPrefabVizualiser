@@ -1,0 +1,26 @@
+name: Verify WebGL docs
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check docs WebGL output exists
+        run: |
+          if [ ! -f docs/index.html ]; then
+            echo "::error::docs/index.html missing. Run Unity menu: Prefab Viewer > Build WebGL to docs"
+            exit 1
+          fi
+          if [ ! -d docs/Build ]; then
+            echo "::error::docs/Build missing."
+            exit 1
+          fi
+          echo "docs/ WebGL layout OK"
