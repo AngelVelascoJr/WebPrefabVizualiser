@@ -1,5 +1,6 @@
 # Web Prefab Visualiser
 
+
 Runtime prefab viewer for **Unity WebGL**: pick a prefab from a catalog, browse its **Hierarchy**, and read a **read-only Inspector** in the browser. Deployed via **GitHub Pages** (`docs/` folder).
 
 ## Requirements
