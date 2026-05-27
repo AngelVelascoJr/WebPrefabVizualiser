@@ -50,6 +50,9 @@ namespace PrefabViewer.UI
                 case PropertyDisplayKind.ObjectReference:
                     CreateObjectReferenceField(row.transform, prop.value ?? "None");
                     break;
+                case PropertyDisplayKind.VRChatLegacy:
+                    CreateVRChatLegacyField(row.transform, prop.value ?? "");
+                    break;
                 default:
                     CreateTextField(row.transform, prop.value ?? "");
                     break;
@@ -63,12 +66,12 @@ namespace PrefabViewer.UI
             var header = new GameObject("Header", typeof(RectTransform), typeof(Image), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             header.transform.SetParent(parent, false);
             header.GetComponent<Image>().color = UiTheme.PanelHeader;
-            header.GetComponent<LayoutElement>().preferredHeight = 22;
-            header.GetComponent<LayoutElement>().minHeight = 22;
+            header.GetComponent<LayoutElement>().preferredHeight = 32;
+            header.GetComponent<LayoutElement>().minHeight = 32;
 
             var hlg = header.GetComponent<HorizontalLayoutGroup>();
-            hlg.padding = new RectOffset(4, 4, 2, 2);
-            hlg.spacing = 6;
+            hlg.padding = new RectOffset(8, 8, 6, 6);
+            hlg.spacing = 10;
             hlg.childAlignment = TextAnchor.MiddleLeft;
             hlg.childControlWidth = false;
             hlg.childForceExpandWidth = false;
@@ -79,10 +82,14 @@ namespace PrefabViewer.UI
             titleGo.transform.SetParent(header.transform, false);
             var title = titleGo.GetComponent<TextMeshProUGUI>();
             title.text = typeName;
-            title.fontSize = 12;
+            title.fontSize = 14;
             title.fontStyle = FontStyles.Bold;
             title.color = UiTheme.TextPrimary;
             title.font = UiFactory.GetDefaultTmpFont();
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 11;
+            title.fontSizeMax = 14;
+            title.overflowMode = TextOverflowModes.Ellipsis;
             titleGo.GetComponent<LayoutElement>().flexibleWidth = 1;
 
             return header;
@@ -114,6 +121,10 @@ namespace PrefabViewer.UI
             tmp.fontSize = 11;
             tmp.color = UiTheme.InspectorLabel;
             tmp.alignment = TextAlignmentOptions.MidlineRight;
+            tmp.enableAutoSizing = true;
+            tmp.fontSizeMin = 9;
+            tmp.fontSizeMax = 11;
+            tmp.overflowMode = TextOverflowModes.Ellipsis;
             tmp.font = UiFactory.GetDefaultTmpFont();
             var le = go.GetComponent<LayoutElement>();
             le.preferredWidth = UiTheme.InspectorLabelWidth;
@@ -139,6 +150,14 @@ namespace PrefabViewer.UI
             var field = CreateFieldShell(parent, 1f);
             AddFieldText(field.transform, text, TextAlignmentOptions.MidlineLeft, new Vector4(6, 0, 28, 0));
             AddObjectPickerIcon(field.transform);
+        }
+
+        static void CreateVRChatLegacyField(Transform parent, string text)
+        {
+            var field = CreateFieldShell(parent, 1f);
+            field.GetComponent<Image>().color = UiTheme.VRChatLegacyFieldBg;
+            AddFieldText(field.transform, "[VRChat] " + text, TextAlignmentOptions.MidlineLeft, new Vector4(6, 0, 6, 0),
+                UiTheme.VRChatLegacyLabel);
         }
 
         static void CreateReadOnlyCheckbox(Transform parent, bool isOn)
@@ -253,14 +272,15 @@ namespace PrefabViewer.UI
             return shell;
         }
 
-        static void AddFieldText(Transform field, string text, TextAlignmentOptions align, Vector4 margin)
+        static void AddFieldText(Transform field, string text, TextAlignmentOptions align, Vector4 margin,
+            Color? textColor = null)
         {
             var textGo = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
             textGo.transform.SetParent(field, false);
             var tmp = textGo.GetComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.fontSize = 11;
-            tmp.color = UiTheme.TextPrimary;
+            tmp.color = textColor ?? UiTheme.TextPrimary;
             tmp.alignment = align;
             tmp.margin = margin;
             tmp.raycastTarget = false;

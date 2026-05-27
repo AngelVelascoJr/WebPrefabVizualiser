@@ -1,0 +1,24 @@
+Prefabs en Assets/Prefabs/** que contienen UdonBehaviour (guid 45115577ef41a5b4ca741ed302693907):
+
+Assets/Prefabs/Bote/Bote.prefab
+Assets/Prefabs/Botella/BotellaLabV1.prefab
+Assets/Prefabs/Botella/BotellasDeLiquidos/BotellaLabAgua.prefab
+Assets/Prefabs/Botella/BotellasDeLiquidos/PourSystem.prefab
+Assets/Prefabs/Cotton/cotton.prefab
+Assets/Prefabs/Desbastadora/PrefabDesbastadora 1.prefab
+Assets/Prefabs/Desbastadora/PrefabPulidora.prefab
+Assets/Prefabs/Desbastadora/xd/desbastadora.prefab
+Assets/Prefabs/Fuentes de liquido/Fuente de liquido.prefab
+Assets/Prefabs/Lijas/Lija Circular Base.prefab
+Assets/Prefabs/Lijas/Lija cuadrada.prefab
+Assets/Prefabs/LijasDataholderYObjectPool.prefab
+Assets/Prefabs/MicroscopeDataholder.prefab
+Assets/Prefabs/Microscopio/Microscopio.prefab
+Assets/Prefabs/Microscopio/Microscopio_LP.prefab
+Assets/Prefabs/Mueble/PrefabMueble.prefab
+Assets/Prefabs/Pistola de calor/PistolaDeCalor.prefab
+Assets/Prefabs/Placer.prefab
+Assets/Prefabs/Probeta/PrefabProbeta_V2.prefab
+Assets/Prefabs/Tijeras/Tijeras.prefab
+Assets/Prefabs/VRCWorld.prefab
+

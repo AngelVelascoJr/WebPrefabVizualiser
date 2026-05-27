@@ -79,7 +79,8 @@ namespace PrefabViewer.UI
                 var toggleLabel = new GameObject("Icon", typeof(RectTransform), typeof(TextMeshProUGUI));
                 toggleLabel.transform.SetParent(toggleGo.transform, false);
                 var tmp = toggleLabel.GetComponent<TextMeshProUGUI>();
-                tmp.text = node.IsExpanded ? "▼" : "▶";
+                // Avoid missing-glyph warnings on some TMP fonts by using ASCII.
+                tmp.text = node.IsExpanded ? "v" : ">";
                 tmp.fontSize = 12;
                 tmp.alignment = TextAlignmentOptions.Center;
                 tmp.color = UiTheme.TextMuted;
@@ -105,6 +106,10 @@ namespace PrefabViewer.UI
             label.fontSize = 13;
             label.color = UiTheme.TextPrimary;
             label.alignment = TextAlignmentOptions.MidlineLeft;
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 10;
+            label.fontSizeMax = 13;
+            label.overflowMode = TextOverflowModes.Ellipsis;
             labelGo.GetComponent<LayoutElement>().flexibleWidth = 1;
 
             var rowBtn = row.GetComponent<Button>();

@@ -59,9 +59,14 @@ namespace PrefabViewer.Preview
             gridObject.transform.localScale = new Vector3(4f, 1f, 4f);
             gridObject.transform.position = Vector3.zero;
 
-            var collider = gridObject.GetComponent<Collider>();
-            if (collider != null)
-                Destroy(collider);
+            // Keep a collider for raycasts/picking in the preview.
+            // Unity Plane primitive uses a MeshCollider by default; replace with a thin BoxCollider.
+            var existingCollider = gridObject.GetComponent<Collider>();
+            if (existingCollider != null)
+                Destroy(existingCollider);
+            var box = gridObject.AddComponent<BoxCollider>();
+            box.center = Vector3.zero;
+            box.size = new Vector3(10f, 0.02f, 10f);
 
             var shader = Shader.Find("Unlit/Transparent")
                 ?? Shader.Find("Legacy Shaders/Transparent/Diffuse")

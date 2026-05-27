@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
+using VRChatMigration;
 
 namespace PrefabViewer.Inspector
 {
@@ -31,6 +32,8 @@ namespace PrefabViewer.Inspector
                 if (component == null)
                     continue;
                 if (component is Transform)
+                    continue;
+                if (component.GetType().IsDefined(typeof(global::PrefabViewerIgnoreComponentAttribute), true))
                     continue;
 
                 var info = new ComponentInfo
@@ -97,6 +100,12 @@ namespace PrefabViewer.Inspector
                 return;
             }
 
+            if (TryBuildLegacyDto(field, value, out var legacyDto))
+            {
+                output.Add(legacyDto);
+                return;
+            }
+
             output.Add(BuildDto(field.Name, field.FieldType, value));
         }
 
@@ -113,6 +122,37 @@ namespace PrefabViewer.Inspector
             }
 
             output.Add(BuildDto(property.Name, property.PropertyType, value));
+        }
+
+        static bool TryBuildLegacyDto(FieldInfo field, object value, out PropertyInfoDto dto)
+        {
+            var legacy = field.GetCustomAttribute<VRChatLegacyAttribute>();
+            if (legacy == null)
+            {
+                dto = null;
+                return false;
+            }
+
+            var label = string.IsNullOrEmpty(legacy.Description)
+                ? legacy.VrcTypeName
+                : $"{legacy.VrcTypeName} — {legacy.Description}";
+
+            dto = new PropertyInfoDto
+            {
+                name = field.Name,
+                typeName = "VRChat",
+                displayKind = PropertyDisplayKind.Unsupported,
+                value = "[VRChat] " + label
+            };
+
+            if (value is string s && !string.IsNullOrEmpty(s))
+                dto.value = $"{label} (stub: {s})";
+            else if (value is UnityEngine.Object obj && obj != null)
+                dto.value = $"{label} → {obj.name}";
+            else if (value is bool b)
+                dto.value = $"{label} = {b}";
+
+            return true;
         }
 
         static PropertyInfoDto BuildDto(string name, Type type, object value)

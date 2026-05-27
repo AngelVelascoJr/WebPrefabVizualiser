@@ -27,5 +27,8 @@ namespace PrefabViewer.UI
         public const float InspectorLabelWidth = 130f;
         public const float InspectorRowHeight = 20f;
         public const float InspectorFieldHeight = 18f;
+
+        public static readonly Color VRChatLegacyLabel = new Color(0.75f, 0.55f, 0.35f, 1f);
+        public static readonly Color VRChatLegacyFieldBg = new Color(0.2f, 0.16f, 0.12f, 1f);
     }
 }

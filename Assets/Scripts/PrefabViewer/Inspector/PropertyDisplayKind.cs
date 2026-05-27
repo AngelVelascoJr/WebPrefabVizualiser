@@ -14,6 +14,7 @@ namespace PrefabViewer.Inspector
         LayerMask,
         ObjectReference,
         Color,
-        Unsupported
+        Unsupported,
+        VRChatLegacy,
     }
 }
