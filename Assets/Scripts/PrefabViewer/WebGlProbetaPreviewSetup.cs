@@ -10,9 +10,6 @@ namespace PrefabViewer
     {
         const string FacePreviewMaterialResource = "PrefabViewer/FacePreviewUnlit";
 
-        public static string LastFaceAlbedoTextureDebug { get; private set; }
-        public static string LastFaceUnlitShaderDebug { get; private set; }
-
         static Material s_facePreviewTemplate;
         static Shader s_cachedFaceUnlitShader;
 
@@ -117,12 +114,8 @@ namespace PrefabViewer
         static int ApplyFaceMeshPreviewMaterials(GameObject root)
         {
             var unlitShader = ResolveFaceUnlitShader();
-            LastFaceUnlitShaderDebug = unlitShader != null ? unlitShader.name : "null";
             if (unlitShader == null)
-            {
-                LastFaceAlbedoTextureDebug = "no-shader";
                 return 0;
-            }
 
             var changes = 0;
             foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
@@ -158,7 +151,6 @@ namespace PrefabViewer
                     if (tex == null)
                         continue;
 
-                    LastFaceAlbedoTextureDebug = tex.name;
                     mats[i] = CreateFaceUnlitMaterial(unlitShader, m.name, tex, m);
                     changed = true;
                     changes++;

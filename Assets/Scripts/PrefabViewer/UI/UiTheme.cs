@@ -21,8 +21,13 @@ namespace PrefabViewer.UI
         public static readonly Color InspectorFieldBg = new Color(0.165f, 0.165f, 0.165f, 1f);
         public static readonly Color InspectorFieldBorder = new Color(0.29f, 0.29f, 0.29f, 1f);
         public static readonly Color InspectorLabel = new Color(0.7f, 0.7f, 0.7f, 1f);
-        public static readonly Color InspectorCheckboxBg = new Color(0.22f, 0.22f, 0.22f, 1f);
-        public static readonly Color InspectorCheckboxOn = new Color(0.55f, 0.65f, 0.78f, 1f);
+        // Unity Inspector hierarchy/object active checkbox (dark theme).
+        public static readonly Color InspectorToggleBg = new Color(0.22f, 0.22f, 0.22f, 1f);
+        public static readonly Color InspectorToggleBorder = new Color(0.12f, 0.12f, 0.12f, 1f);
+        public static readonly Color InspectorToggleCheckmark = new Color(0.92f, 0.92f, 0.92f, 1f);
+
+        public static readonly Color InspectorCheckboxBg = InspectorToggleBg;
+        public static readonly Color InspectorCheckboxOn = InspectorToggleCheckmark;
 
         public const float InspectorLabelWidth = 130f;
         public const float InspectorRowHeight = 20f;

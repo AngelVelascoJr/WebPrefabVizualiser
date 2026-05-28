@@ -127,44 +127,51 @@ namespace PrefabViewer.UI
             return block;
         }
 
-        public static Toggle CreateActiveToggle(Transform parent, bool isOn, Action<bool> onChanged)
+        public static void CreateActiveToggle(Transform parent, bool isOn, Action<bool> onChanged)
         {
-            var go = new GameObject("Active", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement));
+            const float size = 13f;
+
+            var go = new GameObject("Active", typeof(RectTransform), typeof(Button), typeof(LayoutElement));
             go.transform.SetParent(parent, false);
             var le = go.GetComponent<LayoutElement>();
-            le.preferredWidth = 16;
-            le.preferredHeight = 16;
-            le.minWidth = 16;
-            le.minHeight = 16;
+            le.preferredWidth = size;
+            le.preferredHeight = size;
+            le.minWidth = size;
+            le.minHeight = size;
 
-            var bg = new GameObject("Background", typeof(RectTransform), typeof(Image));
-            bg.transform.SetParent(go.transform, false);
-            var bgImg = bg.GetComponent<Image>();
-            bgImg.color = UiTheme.InspectorFieldBg;
-            bgImg.raycastTarget = true;
-            var outline = bg.AddComponent<Outline>();
-            outline.effectColor = UiTheme.InspectorFieldBorder;
-            outline.effectDistance = new Vector2(1f, -1f);
-            Stretch(bg.GetComponent<RectTransform>());
+            var graphic = CreateSpriteCheckboxImage(go.transform, isOn);
+            var btn = go.GetComponent<Button>();
+            btn.targetGraphic = graphic;
+            btn.transition = Selectable.Transition.None;
 
-            var check = new GameObject("Checkmark", typeof(RectTransform), typeof(Image));
-            check.transform.SetParent(go.transform, false);
-            var checkImg = check.GetComponent<Image>();
-            checkImg.color = UiTheme.InspectorCheckboxOn;
-            var checkRt = check.GetComponent<RectTransform>();
-            checkRt.anchorMin = new Vector2(0.2f, 0.2f);
-            checkRt.anchorMax = new Vector2(0.8f, 0.8f);
-            checkRt.offsetMin = Vector2.zero;
-            checkRt.offsetMax = Vector2.zero;
+            var state = isOn;
+            btn.onClick.AddListener(() =>
+            {
+                state = !state;
+                ApplyCheckboxSprite(graphic, state);
+                onChanged?.Invoke(state);
+            });
+        }
 
-            var toggle = go.GetComponent<Toggle>();
-            toggle.targetGraphic = bgImg;
-            toggle.graphic = checkImg;
-            toggle.isOn = isOn;
-            toggle.SetIsOnWithoutNotify(isOn);
-            if (onChanged != null)
-                toggle.onValueChanged.AddListener(v => onChanged(v));
-            return toggle;
+        static void ApplyCheckboxSprite(Image image, bool isOn)
+        {
+            var sprite = isOn ? UiCheckmarkSprites.Checked : UiCheckmarkSprites.Unchecked;
+            if (sprite != null)
+                image.sprite = sprite;
+        }
+
+        static Image CreateSpriteCheckboxImage(Transform parent, bool isOn)
+        {
+            var box = new GameObject("Graphic", typeof(RectTransform), typeof(Image));
+            box.transform.SetParent(parent, false);
+            var img = box.GetComponent<Image>();
+            img.type = Image.Type.Simple;
+            img.preserveAspect = true;
+            img.color = Color.white;
+            img.raycastTarget = true;
+            ApplyCheckboxSprite(img, isOn);
+            Stretch(box.GetComponent<RectTransform>());
+            return img;
         }
 
         static void CreateLabel(Transform parent, string text)
@@ -217,26 +224,18 @@ namespace PrefabViewer.UI
 
         static void CreateReadOnlyCheckbox(Transform parent, bool isOn)
         {
-            var box = new GameObject("Checkbox", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+            const float size = 13f;
+
+            var box = new GameObject("Checkbox", typeof(RectTransform), typeof(LayoutElement));
             box.transform.SetParent(parent, false);
             var le = box.GetComponent<LayoutElement>();
-            le.preferredWidth = 14;
-            le.preferredHeight = 14;
-            le.minWidth = 14;
-            le.minHeight = 14;
-            box.GetComponent<Image>().color = UiTheme.InspectorCheckboxBg;
+            le.preferredWidth = size;
+            le.preferredHeight = size;
+            le.minWidth = size;
+            le.minHeight = size;
 
-            if (isOn)
-            {
-                var mark = new GameObject("Check", typeof(RectTransform), typeof(Image));
-                mark.transform.SetParent(box.transform, false);
-                var rt = mark.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(0.15f, 0.15f);
-                rt.anchorMax = new Vector2(0.85f, 0.85f);
-                rt.offsetMin = Vector2.zero;
-                rt.offsetMax = Vector2.zero;
-                mark.GetComponent<Image>().color = UiTheme.InspectorCheckboxOn;
-            }
+            var img = CreateSpriteCheckboxImage(box.transform, isOn);
+            img.raycastTarget = false;
         }
 
         static void CreateVectorFields(Transform parent, float x, float y, float z, int count, float w = 0f)

@@ -177,9 +177,8 @@ namespace PrefabViewer
             // Apply current particle toggle to new selection.
             ApplyParticleToggleToInstance(currentInstance, particlesEnabled);
 
-            var probetaSetupCount = global::PrefabViewer.WebGlProbetaPreviewSetup.Apply(currentInstance);
-            var shaderGraphFallbackCount = WebGlShaderGraphMaterialFallback.Apply(currentInstance);
-            var mutedBehaviourCount = 0;
+            global::PrefabViewer.WebGlProbetaPreviewSetup.Apply(currentInstance);
+            WebGlShaderGraphMaterialFallback.Apply(currentInstance);
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
                 var mutedTypeNames = new[]
@@ -201,10 +200,7 @@ namespace PrefabViewer
                         if (typeName != mutedTypeNames[i])
                             continue;
                         if (behaviour.enabled)
-                        {
                             behaviour.enabled = false;
-                            mutedBehaviourCount++;
-                        }
                         break;
                     }
                 }
