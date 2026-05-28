@@ -52,7 +52,7 @@ namespace PrefabViewer.UI
             var hasChildren = node.Children.Count > 0;
             var indent = 12 + node.Depth * 16;
 
-            var row = new GameObject("HierarchyRow", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            var row = new GameObject("HierarchyRow", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
             row.transform.SetParent(content, false);
             var bg = row.GetComponent<Image>();
             bg.color = node.Id == selectedId ? UiTheme.RowSelected : UiTheme.RowNormal;
@@ -67,6 +67,21 @@ namespace PrefabViewer.UI
             hlg.childControlWidth = false;
             hlg.childControlHeight = true;
             hlg.childForceExpandWidth = false;
+
+            var capturedNode = node;
+            if (node.GameObject != null)
+            {
+                var capturedGo = node.GameObject;
+                InspectorFieldFactory.CreateActiveToggle(row.transform, capturedGo.activeSelf, active =>
+                {
+                    if (capturedGo == null)
+                        return;
+                    capturedGo.SetActive(active);
+                    if (capturedNode.Id == selectedId)
+                        onNodeSelected?.Invoke(capturedNode);
+                    Rebuild();
+                });
+            }
 
             if (hasChildren)
             {
@@ -99,12 +114,13 @@ namespace PrefabViewer.UI
                 spacer.GetComponent<LayoutElement>().preferredWidth = 18;
             }
 
-            var labelGo = new GameObject("Name", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));
+            var labelGo = new GameObject("Name", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement), typeof(Button));
             labelGo.transform.SetParent(row.transform, false);
             var label = labelGo.GetComponent<TextMeshProUGUI>();
             label.text = node.Name;
             label.fontSize = 13;
-            label.color = UiTheme.TextPrimary;
+            var isActive = node.GameObject == null || node.GameObject.activeSelf;
+            label.color = isActive ? UiTheme.TextPrimary : UiTheme.TextMuted;
             label.alignment = TextAlignmentOptions.MidlineLeft;
             label.enableAutoSizing = true;
             label.fontSizeMin = 10;
@@ -112,8 +128,8 @@ namespace PrefabViewer.UI
             label.overflowMode = TextOverflowModes.Ellipsis;
             labelGo.GetComponent<LayoutElement>().flexibleWidth = 1;
 
-            var rowBtn = row.GetComponent<Button>();
-            var capturedNode = node;
+            var rowBtn = labelGo.GetComponent<Button>();
+            rowBtn.transition = Selectable.Transition.None;
             rowBtn.onClick.AddListener(() =>
             {
                 selectedId = capturedNode.Id;

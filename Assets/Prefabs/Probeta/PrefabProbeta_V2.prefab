@@ -29781,10 +29781,10 @@ MonoBehaviour:
   mirrorCanva: {fileID: 3912182089639485397}
   PCVRMask:
     serializedVersion: 2
-    m_Bits: 400555799
+    m_Bits: 23
   AndroidMask:
     serializedVersion: 2
-    m_Bits: 268707328
+    m_Bits: 0
 --- !u!114 &5288627489095948272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30326,7 +30326,7 @@ MonoBehaviour:
   TurnOffMirrorOcclusion: 1
   m_ReflectLayers:
     serializedVersion: 2
-    m_Bits: 132120343
+    m_Bits: 23
   mirrorResolution: 256
   maximumAntialiasing: 1
   customShader: {fileID: 0}
@@ -50952,10 +50952,10 @@ MonoBehaviour:
   mirrorCanva: {fileID: 3912182089639485397}
   PCVRMask:
     serializedVersion: 2
-    m_Bits: 400555799
+    m_Bits: 23
   AndroidMask:
     serializedVersion: 2
-    m_Bits: 268707328
+    m_Bits: 0
 --- !u!114 &2147964419700981245
 MonoBehaviour:
   m_ObjectHideFlags: 0

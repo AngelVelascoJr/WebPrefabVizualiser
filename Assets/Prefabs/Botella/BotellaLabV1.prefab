@@ -1926,15 +1926,15 @@ MonoBehaviour:
   _udonSharpBackingUdonBehaviour: {fileID: 4112966919079308596}
   isInfinite: 0
   Tipo: 
-  LiquidFill: 0
-  LiquidPourVel: 0
-  InfillGO: {fileID: 0}
+  LiquidFill: 250
+  LiquidPourVel: 10
+  InfillGO: {fileID: 8842236923811582043}
   WaterMaterial: {fileID: 0}
-  _pickupComp: {fileID: 0}
-  m_Renderer: {fileID: 0}
-  _particleSystem: {fileID: 0}
+  _legacyVrcPickup__pickupComp: 
+  m_Renderer: {fileID: 2147753785495279297}
+  _particleSystem: {fileID: 3095478200610455007}
   _PSOriginalPos: {x: 0, y: 0, z: 0}
-  _Visual: {fileID: 0}
+  _Visual: {fileID: 539904821586546240}
 --- !u!114 &4112966919079308596
 MonoBehaviour:
   m_ObjectHideFlags: 0

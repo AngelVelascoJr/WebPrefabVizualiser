@@ -105,10 +105,11 @@ public class UpdatePreview : MonoBehaviour
 
     private void getDataFaces(GameObject thisFace)
     {
-        reflexion = thisFace.GetComponent<Renderer>().material.GetFloat("_Reflexion");
-        granoLija = thisFace.GetComponent<Renderer>().material.GetFloat("_GranoLija");
-        isFirstSanding = thisFace.GetComponent<Renderer>().material.GetInt("_IsFirstSanding");
-        angleRotation = thisFace.GetComponent<Renderer>().material.GetFloat("_AngleRotation");
+        var material = thisFace.GetComponent<Renderer>().material;
+        reflexion = ShaderMaterialAccess.GetFloat(material, "_Reflexion");
+        granoLija = ShaderMaterialAccess.GetFloat(material, "_GranoLija");
+        isFirstSanding = ShaderMaterialAccess.GetInt(material, "_IsFirstSanding");
+        angleRotation = ShaderMaterialAccess.GetFloat(material, "_AngleRotation");
     }
 
     private void activeSelf(GameObject shader, GameObject mirror)
@@ -124,15 +125,16 @@ public class UpdatePreview : MonoBehaviour
     private void updateShader(GameObject shader)
     {
         getDataFaces(probetaShaderActual);
-        shader.GetComponent<Renderer>().material.SetFloat("_Reflexion", reflexion);
-        shader.GetComponent<Renderer>().material.SetFloat("_GranoLija", granoLija);
-        shader.GetComponent<Renderer>().material.SetInt("_IsFirstSanding", isFirstSanding);
-        shader.GetComponent<Renderer>().material.SetFloat("_AngleRotation", angleRotation);
+        var material = shader.GetComponent<Renderer>().material;
+        ShaderMaterialAccess.SetFloat(material, "_Reflexion", reflexion);
+        ShaderMaterialAccess.SetFloat(material, "_GranoLija", granoLija);
+        ShaderMaterialAccess.SetInt(material, "_IsFirstSanding", isFirstSanding);
+        ShaderMaterialAccess.SetFloat(material, "_AngleRotation", angleRotation);
     }
 
     private void scaleShader(GameObject shadertoScale, float scale, int posArray)
     {
-        shadertoScale.GetComponent<Renderer>().materials[posArray].SetFloat("_Scale", scale);
+        ShaderMaterialAccess.SetFloat(shadertoScale.GetComponent<Renderer>().materials[posArray], "_Scale", scale);
     }
 
     private void forceActiveShader(GameObject shaderToActivate, GameObject mirrorToCheck)

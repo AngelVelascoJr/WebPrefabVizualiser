@@ -22,15 +22,27 @@ public class BotellaLab : MonoBehaviour
 
     private void Start()
     {
-        WaterMaterial = InfillGO.GetComponent<MeshRenderer>().material;
+        if (InfillGO == null || _particleSystem == null)
+            return;
+
+        var infillRenderer = InfillGO.GetComponent<MeshRenderer>();
+        if (infillRenderer == null)
+            return;
+
+        WaterMaterial = infillRenderer.material;
         var main = _particleSystem.main;
-        main.startColor = WaterMaterial.GetColor("_ColorAguaSuperficie");
+        if (WaterMaterial != null && WaterMaterial.HasProperty("_ColorAguaSuperficie"))
+            main.startColor = WaterMaterial.GetColor("_ColorAguaSuperficie");
         _PSOriginalPos = _particleSystem.transform.localPosition;
     }
 
     private void Update()
     {
-        WaterMaterial.SetFloat("_FillPercentage", (Mathf.Clamp(LiquidFill, 0f, Max)/ Max)*100f);
+        if (WaterMaterial == null || _particleSystem == null)
+            return;
+
+        if (WaterMaterial.HasProperty("_FillPercentage"))
+            WaterMaterial.SetFloat("_FillPercentage", (Mathf.Clamp(LiquidFill, 0f, Max) / Max) * 100f);
         if(_particleSystem.isEmitting)
         {
             if(!isInfinite)
@@ -82,9 +94,13 @@ public class BotellaLab : MonoBehaviour
 
     public void UseThisThing()
     {
+        if (_particleSystem == null || WaterMaterial == null || _Visual == null)
+            return;
+
         // VRChat: requires held pickup
         var Mainn = _particleSystem.main;
-        Mainn.startColor = WaterMaterial.GetColor("_ColorAgua");
+        if (WaterMaterial.HasProperty("_ColorAgua"))
+            Mainn.startColor = WaterMaterial.GetColor("_ColorAgua");
         _particleSystem.transform.localPosition = _PSOriginalPos;
         if(false && false /* VRChat: _pickupComp.currentPlayer.IsUserInVR()*/)
         {
@@ -109,11 +125,12 @@ public class BotellaLab : MonoBehaviour
 
     public void UnUseThisThing()
     {
+        if (_particleSystem == null)
+            return;
+
         _particleSystem.Stop();
-        if (!LastUserWasVr)
-        {
+        if (!LastUserWasVr && _Visual != null)
             _Visual.transform.localRotation = Quaternion.Euler(0, 90, 00);
-        }
     }
 
     private void OnParticleCollision(GameObject other)

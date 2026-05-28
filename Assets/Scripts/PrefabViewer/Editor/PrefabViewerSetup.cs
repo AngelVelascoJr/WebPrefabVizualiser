@@ -66,6 +66,10 @@ namespace PrefabViewer.Editor
                 return false;
 
             ConfigureBuildSettings();
+            Z3yShaderGraphWebGlFix.ApplyPatch();
+            Z3yShaderGraphWebGlFix.ReimportShaderGraphs();
+            WebGlShaderWarmupBuilder.BuildWarmupAsset();
+            WebGlShaderWarmupBuilder.EnsureAlwaysIncludedShaderGraphs();
             var output = GetDocsOutputPath();
             if (Directory.Exists(output))
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using PrefabViewer.Inspector;
 using TMPro;
@@ -11,12 +12,14 @@ namespace PrefabViewer.UI
         RectTransform content;
         ScrollRect scrollRect;
         Slider scrollSpeedSlider;
+        Action onHierarchyRefresh;
         readonly List<GameObject> blocks = new List<GameObject>();
 
-        public void Initialize(RectTransform inspectorContent, ScrollRect scroll)
+        public void Initialize(RectTransform inspectorContent, ScrollRect scroll, Action onHierarchyRefreshRequested = null)
         {
             content = inspectorContent;
             scrollRect = scroll;
+            onHierarchyRefresh = onHierarchyRefreshRequested;
             var body = scroll.transform.parent;
             EnsureBodyLayout(body);
             CreateScrollSpeedSlider(body);
@@ -125,7 +128,13 @@ namespace PrefabViewer.UI
                 return;
             }
 
-            blocks.Add(InspectorFieldFactory.CreateObjectHeader(content, target.name));
+            blocks.Add(InspectorFieldFactory.CreateObjectHeader(content, target, active =>
+            {
+                if (target == null)
+                    return;
+                target.SetActive(active);
+                onHierarchyRefresh?.Invoke();
+            }));
             foreach (var component in components)
                 blocks.Add(CreateComponentBlock(component));
             ResetScrollTop();

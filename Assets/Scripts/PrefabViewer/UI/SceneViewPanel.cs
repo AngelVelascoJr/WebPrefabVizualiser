@@ -13,6 +13,8 @@ namespace PrefabViewer.UI
         RawImage viewportImage;
         RectTransform viewportRect;
         TextMeshProUGUI labelText;
+        Button particlesButton;
+        bool particlesEnabled = true;
 
         bool dragging;
         bool panning;
@@ -82,7 +84,7 @@ namespace PrefabViewer.UI
             relay.panel = this;
         }
 
-        static GameObject CreateToolbar(Transform parent)
+        GameObject CreateToolbar(Transform parent)
         {
             var bar = new GameObject("SceneToolbar", typeof(RectTransform), typeof(Image), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             bar.transform.SetParent(parent, false);
@@ -96,6 +98,7 @@ namespace PrefabViewer.UI
 
             AddToolbarLabel(bar.transform, "Persp");
             AddToolbarLabel(bar.transform, "Shaded");
+            particlesButton = CreateToolbarButton(bar.transform, "Particles: On");
             return bar;
         }
 
@@ -108,6 +111,42 @@ namespace PrefabViewer.UI
             tmp.fontSize = 11;
             tmp.color = UiTheme.TextMuted;
             go.GetComponent<LayoutElement>().preferredWidth = 48;
+        }
+
+        Button CreateToolbarButton(Transform parent, string text)
+        {
+            var go = new GameObject(text, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            go.transform.SetParent(parent, false);
+            var bg = go.GetComponent<Image>();
+            bg.color = UiTheme.RowNormal;
+            var le = go.GetComponent<LayoutElement>();
+            le.preferredWidth = 110;
+            le.minWidth = 110;
+
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+            labelGo.transform.SetParent(go.transform, false);
+            var tmp = labelGo.GetComponent<TextMeshProUGUI>();
+            tmp.text = text;
+            tmp.fontSize = 11;
+            tmp.color = UiTheme.TextMuted;
+            tmp.alignment = TextAlignmentOptions.MidlineLeft;
+            tmp.margin = new Vector4(6, 0, 6, 0);
+            var rt = labelGo.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+
+            var button = go.GetComponent<Button>();
+            button.onClick.AddListener(() =>
+            {
+                particlesEnabled = !particlesEnabled;
+                tmp.text = particlesEnabled ? "Particles: On" : "Particles: Off";
+                var app = FindObjectOfType<PrefabViewer.PrefabViewerApp>();
+                if (app != null)
+                    app.SetParticlesEnabled(particlesEnabled);
+            });
+            return button;
         }
 
         void LateUpdate()

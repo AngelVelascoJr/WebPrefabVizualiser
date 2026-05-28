@@ -127,7 +127,7 @@ public class ProbeBehabiour : MonoBehaviour
             //    Debug.Log($"<color=#ff0000>ERROR IN ALL</color> no paso por nada: LijaRotActiva= {LijaRotationActiva}, EsteParticleSystem emiting = {EsteParticleSystem.isEmitting}----!!!----");
         }
 
-        desgasteEnShader = probetaShader.GetComponent<Renderer>().material.GetFloat("_GranoLija");
+        desgasteEnShader = ShaderMaterialAccess.GetFloat(probetaShader.GetComponent<Renderer>().material, "_GranoLija");
         UpdateMaterial();
     }
 
@@ -176,8 +176,10 @@ public class ProbeBehabiour : MonoBehaviour
     public void updateDesgaste()
     {
         Debug.LogWarning("Send updateDesgaste" + " Desagste is: " + Desgaste + "  desgasteEnShader: " + desgasteEnShader);
-        probetaShader.GetComponent<Renderer>().material.SetFloat("_GranoLija", Desgaste);
-        probetaShader.GetComponent<Renderer>().material.SetFloat("_AngleRotation", Quaternion.AngleAxis(Vector3.Angle(gameObject.transform.up, VectorDeDireccionDeDesgasteActual), gameObject.transform.forward).eulerAngles.z);
+        var faceMaterial = probetaShader.GetComponent<Renderer>().material;
+        ShaderMaterialAccess.SetFloat(faceMaterial, "_GranoLija", Desgaste);
+        ShaderMaterialAccess.SetFloat(faceMaterial, "_AngleRotation",
+            Quaternion.AngleAxis(Vector3.Angle(gameObject.transform.up, VectorDeDireccionDeDesgasteActual), gameObject.transform.forward).eulerAngles.z);
     }
 
     private void checkHumidity()
@@ -364,7 +366,7 @@ public class ProbeBehabiour : MonoBehaviour
     public void BorderToZero()
     {
         //Debug.LogWarning("BorderToZero");
-        bodyMaterial.GetComponent<Renderer>().material.SetFloat("_Scale", 0f);
+        ShaderMaterialAccess.SetFloat(bodyMaterial.GetComponent<Renderer>().material, "_Scale", 0f);
     }
 
     public void StartTimer()

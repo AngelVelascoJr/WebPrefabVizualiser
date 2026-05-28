@@ -139,14 +139,14 @@ public class FaceBehaviour : MonoBehaviour
 
         if (!pulido.haveAluminaBlanca && !pulido.haveAluminaGris && !ataque.haveNital)
         {
-            probetaShader.GetComponent<Renderer>().material.SetFloat("_Reflexion", 0);
+            ShaderMaterialAccess.SetFloat(probetaShader.GetComponent<Renderer>().material, "_Reflexion", 0);
         }
 
-        float desgasteProbeta = probetaShader.GetComponent<Renderer>().material.GetFloat("_GranoLija");
+        float desgasteProbeta = ShaderMaterialAccess.GetFloat(probetaShader.GetComponent<Renderer>().material, "_GranoLija");
 
         if (desgasteProbeta > 80)
         {
-            probetaShader.GetComponent<Renderer>().material.SetInt("_IsFirstSanding", 0);
+            ShaderMaterialAccess.SetInt(probetaShader.GetComponent<Renderer>().material, "_IsFirstSanding", 0);
         }
     }
 
@@ -156,7 +156,7 @@ public class FaceBehaviour : MonoBehaviour
         probetaShader.SetActive(true);
         probetaMirror.SetActive(false);
 
-        probetaShader.GetComponent<Renderer>().material.SetFloat("_Reflexion", 0.6f);
+        ShaderMaterialAccess.SetFloat(probetaShader.GetComponent<Renderer>().material, "_Reflexion", 0.6f);
     }
 
 
@@ -177,12 +177,12 @@ public class FaceBehaviour : MonoBehaviour
 
         if (dirProbe == positionFace)
         {
-            probeBehaviour.bodyMaterial.GetComponent<Renderer>().material.SetFloat("_Scale", 0f);
+            ShaderMaterialAccess.SetFloat(probeBehaviour.bodyMaterial.GetComponent<Renderer>().material, "_Scale", 0f);
         }
 
         else if (IsReady())
         {
-            probeBehaviour.bodyMaterial.GetComponent<Renderer>().material.SetFloat("_Scale", 0f);
+            ShaderMaterialAccess.SetFloat(probeBehaviour.bodyMaterial.GetComponent<Renderer>().material, "_Scale", 0f);
         }
     }
 }

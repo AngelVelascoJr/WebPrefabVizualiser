@@ -2,9 +2,11 @@ using PrefabViewer.Hierarchy;
 using PrefabViewer.Inspector;
 using PrefabViewer.Preview;
 using PrefabViewer.UI;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 namespace PrefabViewer
 {
@@ -27,6 +29,7 @@ namespace PrefabViewer
 
         GameObject currentInstance;
         HierarchyNode currentRoot;
+        bool particlesEnabled = true;
 
         void Awake()
         {
@@ -115,7 +118,7 @@ namespace PrefabViewer
 
             prefabListUI.Initialize(prefabContent, OnPrefabSelected);
             hierarchyUI.Initialize(hierarchyContent, OnNodeSelected);
-            inspectorUI.Initialize(inspectorContent, inspectorScroll);
+            inspectorUI.Initialize(inspectorContent, inspectorScroll, hierarchyUI.Rebuild);
 
             sceneViewPanel = SceneViewPanel.Create(sceneQuadrant.Body, previewScene);
         }
@@ -171,10 +174,90 @@ namespace PrefabViewer
             currentInstance.name = entry.prefab.name;
             currentRoot = HierarchyNode.BuildTree(currentInstance);
 
+            // Apply current particle toggle to new selection.
+            ApplyParticleToggleToInstance(currentInstance, particlesEnabled);
+
+            var probetaSetupCount = global::PrefabViewer.WebGlProbetaPreviewSetup.Apply(currentInstance);
+            var shaderGraphFallbackCount = WebGlShaderGraphMaterialFallback.Apply(currentInstance);
+            var mutedBehaviourCount = 0;
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                var mutedTypeNames = new[]
+                {
+                    "ProbeBehabiour",
+                    "FaceBehaviour",
+                    "ActivateMirror",
+                    "LijaCuadrada",
+                    "IdentifyFace",
+                };
+
+                foreach (var behaviour in currentInstance.GetComponentsInChildren<MonoBehaviour>(true))
+                {
+                    if (behaviour == null)
+                        continue;
+                    var typeName = behaviour.GetType().Name;
+                    for (var i = 0; i < mutedTypeNames.Length; i++)
+                    {
+                        if (typeName != mutedTypeNames[i])
+                            continue;
+                        if (behaviour.enabled)
+                        {
+                            behaviour.enabled = false;
+                            mutedBehaviourCount++;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Reduce physics tunneling / free-fall in preview.
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                foreach (var body in currentInstance.GetComponentsInChildren<Rigidbody>(true))
+                {
+                    if (body == null)
+                        continue;
+                    body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+                    body.interpolation = RigidbodyInterpolation.Interpolate;
+                }
+            }
+
             SetQuadrantVisibility(hasPrefab: true);
             hierarchyUI.Bind(currentRoot);
             OnNodeSelected(currentRoot);
             sceneViewPanel?.FrameObject(currentInstance);
+        }
+
+        public void SetParticlesEnabled(bool enabled)
+        {
+            particlesEnabled = enabled;
+            ApplyParticleToggleToInstance(currentInstance, particlesEnabled);
+        }
+
+        static void ApplyParticleToggleToInstance(GameObject instance, bool enabled)
+        {
+            if (instance == null)
+                return;
+
+            foreach (var ps in instance.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                if (ps == null)
+                    continue;
+
+                if (enabled)
+                {
+                    var em = ps.emission;
+                    em.enabled = true;
+                    if (!ps.isPlaying)
+                        ps.Play(withChildren: true);
+                }
+                else
+                {
+                    var em = ps.emission;
+                    em.enabled = false;
+                    ps.Stop(withChildren: true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                }
+            }
         }
 
         void OnNodeSelected(HierarchyNode node)

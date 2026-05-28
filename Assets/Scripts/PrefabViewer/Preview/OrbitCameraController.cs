@@ -49,7 +49,9 @@ namespace PrefabViewer.Preview
             var right = camera.transform.right;
             var up = camera.transform.up;
             Target -= right * deltaPixels.x * scale;
-            Target += up * deltaPixels.y * scale;
+            // Screen-space Y drag should move the view in the same direction as the pointer.
+            // In WebGL builds PointerEventData delta can feel inverted vs expected DCC pan.
+            Target -= up * deltaPixels.y * scale;
         }
 
         public void Zoom(float scrollDelta, float sensitivity = 0.12f)

@@ -66,7 +66,8 @@ namespace PrefabViewer.Preview
                 Destroy(existingCollider);
             var box = gridObject.AddComponent<BoxCollider>();
             box.center = Vector3.zero;
-            box.size = new Vector3(10f, 0.02f, 10f);
+            // A slightly thicker ground reduces tunneling for fast / small rigidbodies in WebGL.
+            box.size = new Vector3(10f, 0.2f, 10f);
 
             var shader = Shader.Find("Unlit/Transparent")
                 ?? Shader.Find("Legacy Shaders/Transparent/Diffuse")
@@ -120,6 +121,18 @@ namespace PrefabViewer.Preview
             PreviewCamera.nearClipPlane = 0.05f;
             PreviewCamera.farClipPlane = 200f;
             PreviewCamera.enabled = false;
+
+            // Some legacy prefab scripts (from VRChat) rely on Camera.main.
+            // Keep the preview render camera untagged (it can be enabled later with a RenderTexture),
+            // and provide a separate lightweight MainCamera so their logic works without impacting viewer input.
+            var mainCamGo = new GameObject("MainCamera", typeof(Camera));
+            mainCamGo.transform.SetParent(parent, false);
+            mainCamGo.tag = "MainCamera";
+            var mainCam = mainCamGo.GetComponent<Camera>();
+            mainCam.enabled = true;
+            mainCam.clearFlags = CameraClearFlags.Depth;
+            mainCam.cullingMask = 0;
+            mainCam.depth = -100;
         }
 
         public RenderTexture EnsureRenderTexture(int width, int height)

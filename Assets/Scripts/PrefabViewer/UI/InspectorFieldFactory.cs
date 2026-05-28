@@ -1,3 +1,4 @@
+using System;
 using PrefabViewer.Inspector;
 using TMPro;
 using UnityEngine;
@@ -50,9 +51,6 @@ namespace PrefabViewer.UI
                 case PropertyDisplayKind.ObjectReference:
                     CreateObjectReferenceField(row.transform, prop.value ?? "None");
                     break;
-                case PropertyDisplayKind.VRChatLegacy:
-                    CreateVRChatLegacyField(row.transform, prop.value ?? "");
-                    break;
                 default:
                     CreateTextField(row.transform, prop.value ?? "");
                     break;
@@ -95,21 +93,78 @@ namespace PrefabViewer.UI
             return header;
         }
 
-        public static GameObject CreateObjectHeader(Transform parent, string objectName)
+        public static GameObject CreateObjectHeader(Transform parent, GameObject target, Action<bool> onActiveChanged = null)
         {
-            var block = new GameObject("ObjectHeader", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+            var objectName = target != null ? target.name : "Object";
+            var block = new GameObject("ObjectHeader", typeof(RectTransform), typeof(Image), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             block.transform.SetParent(parent, false);
             block.GetComponent<Image>().color = UiTheme.PanelHeader;
-            block.GetComponent<LayoutElement>().preferredHeight = 26;
+            block.GetComponent<LayoutElement>().preferredHeight = 28;
 
-            var field = CreateFieldShell(block.transform, 1f);
-            var frt = field.GetComponent<RectTransform>();
-            frt.anchorMin = Vector2.zero;
-            frt.anchorMax = Vector2.one;
-            frt.offsetMin = new Vector2(6, 4);
-            frt.offsetMax = new Vector2(-6, -4);
-            AddFieldText(field.transform, objectName, TextAlignmentOptions.MidlineLeft, new Vector4(6, 0, 6, 0));
+            var hlg = block.GetComponent<HorizontalLayoutGroup>();
+            hlg.padding = new RectOffset(6, 6, 4, 4);
+            hlg.spacing = 6;
+            hlg.childAlignment = TextAnchor.MiddleLeft;
+            hlg.childControlWidth = false;
+            hlg.childForceExpandWidth = false;
+
+            if (target != null && onActiveChanged != null)
+            {
+                CreateActiveToggle(block.transform, target.activeSelf, onActiveChanged);
+            }
+
+            var titleGo = new GameObject("Title", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));
+            titleGo.transform.SetParent(block.transform, false);
+            var title = titleGo.GetComponent<TextMeshProUGUI>();
+            title.text = objectName;
+            title.fontSize = 13;
+            title.fontStyle = FontStyles.Bold;
+            title.color = target != null && target.activeSelf ? UiTheme.TextPrimary : UiTheme.TextMuted;
+            title.font = UiFactory.GetDefaultTmpFont();
+            title.alignment = TextAlignmentOptions.MidlineLeft;
+            title.overflowMode = TextOverflowModes.Ellipsis;
+            titleGo.GetComponent<LayoutElement>().flexibleWidth = 1;
             return block;
+        }
+
+        public static Toggle CreateActiveToggle(Transform parent, bool isOn, Action<bool> onChanged)
+        {
+            var go = new GameObject("Active", typeof(RectTransform), typeof(Toggle), typeof(LayoutElement));
+            go.transform.SetParent(parent, false);
+            var le = go.GetComponent<LayoutElement>();
+            le.preferredWidth = 16;
+            le.preferredHeight = 16;
+            le.minWidth = 16;
+            le.minHeight = 16;
+
+            var bg = new GameObject("Background", typeof(RectTransform), typeof(Image));
+            bg.transform.SetParent(go.transform, false);
+            var bgImg = bg.GetComponent<Image>();
+            bgImg.color = UiTheme.InspectorFieldBg;
+            bgImg.raycastTarget = true;
+            var outline = bg.AddComponent<Outline>();
+            outline.effectColor = UiTheme.InspectorFieldBorder;
+            outline.effectDistance = new Vector2(1f, -1f);
+            Stretch(bg.GetComponent<RectTransform>());
+
+            var check = new GameObject("Checkmark", typeof(RectTransform), typeof(Image));
+            check.transform.SetParent(go.transform, false);
+            var checkImg = check.GetComponent<Image>();
+            checkImg.color = UiTheme.InspectorCheckboxOn;
+            var checkRt = check.GetComponent<RectTransform>();
+            checkRt.anchorMin = new Vector2(0.2f, 0.2f);
+            checkRt.anchorMax = new Vector2(0.8f, 0.8f);
+            checkRt.offsetMin = Vector2.zero;
+            checkRt.offsetMax = Vector2.zero;
+
+            var toggle = go.GetComponent<Toggle>();
+            toggle.targetGraphic = bgImg;
+            toggle.graphic = checkImg;
+            toggle.isOn = isOn;
+            toggle.SetIsOnWithoutNotify(isOn);
+            if (onChanged != null)
+                toggle.onValueChanged.AddListener(v => onChanged(v));
+            return toggle;
         }
 
         static void CreateLabel(Transform parent, string text)

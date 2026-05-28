@@ -154,14 +154,14 @@ public class ActivateMirror : MonoBehaviour
     {
         if (!haveAluminaBlanca && !haveAluminaGris && !haveNital) // Hasta esta etapa solo se ha lijado 
         {
-            probetaShader.GetComponent<Renderer>().material.SetFloat("_Reflexion", 0);
+            ShaderMaterialAccess.SetFloat(probetaShader.GetComponent<Renderer>().material, "_Reflexion", 0);
         }
 
-        desgasteProbeta = probetaShader.GetComponent<Renderer>().material.GetFloat("_GranoLija");
+        desgasteProbeta = ShaderMaterialAccess.GetFloat(probetaShader.GetComponent<Renderer>().material, "_GranoLija");
 
         if (desgasteProbeta > 80)
         {
-            probetaShader.GetComponent<Renderer>().material.SetInt("_IsFirstSanding", 0);
+            ShaderMaterialAccess.SetInt(probetaShader.GetComponent<Renderer>().material, "_IsFirstSanding", 0);
         }
     }
 
@@ -204,7 +204,7 @@ public class ActivateMirror : MonoBehaviour
                 ScaleBorder();
                 if (generalTimer(timePulido, "Tiempo de AGris: "))
                 {
-                    probetaShader.GetComponent<Renderer>().material.SetFloat("_Reflexion", 1);
+                    ShaderMaterialAccess.SetFloat(probetaShader.GetComponent<Renderer>().material, "_Reflexion", 1);
                     finishedPulido1 = true;
                 }
             }
@@ -381,7 +381,7 @@ public class ActivateMirror : MonoBehaviour
     {
         probetaShader.SetActive(true);
         probetaMirror.SetActive(false);
-        probetaShader.GetComponent<Renderer>().material.SetFloat("_Reflexion", 0.6f);
+        ShaderMaterialAccess.SetFloat(probetaShader.GetComponent<Renderer>().material, "_Reflexion", 0.6f);
     }
     public void finishedAtaqueQ() //SCNE
     {
@@ -526,12 +526,12 @@ public class ActivateMirror : MonoBehaviour
         if(dirProbe == positionFace)
         {
             Debug.LogWarning("ScaleBorder by: " + gameObject.name + " Orientation Probe: " + dirProbe);
-            probeBehaviour.bodyMaterial.GetComponent<Renderer>().material.SetFloat("_Scale", 0f);
+            ShaderMaterialAccess.SetFloat(probeBehaviour.bodyMaterial.GetComponent<Renderer>().material, "_Scale", 0f);
         }
         else if (IsReady())
         {
             Debug.LogWarning("ScaleBorder by: " + gameObject.name + " Orientation Probe: " + dirProbe + "IsReady: " + IsReady());
-            probeBehaviour.bodyMaterial.GetComponent<Renderer>().material.SetFloat("_Scale", 0f);
+            ShaderMaterialAccess.SetFloat(probeBehaviour.bodyMaterial.GetComponent<Renderer>().material, "_Scale", 0f);
         }
     }
 */

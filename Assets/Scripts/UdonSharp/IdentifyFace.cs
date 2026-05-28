@@ -1,4 +1,4 @@
-﻿
+
 using UnityEngine;
 
 public class IdentifyFace : MonoBehaviour
@@ -22,7 +22,7 @@ public class IdentifyFace : MonoBehaviour
         if(other.gameObject.GetComponent<LijaCircularBehabiour>() || other.gameObject.GetComponent<PulidoraScript>())
         {
             probeBehabiour.probetaShader = myShader;
-            probeBehabiour.Desgaste = myShader.GetComponent<Renderer>().material.GetFloat("_GranoLija");
+            probeBehabiour.Desgaste = ShaderMaterialAccess.GetFloat(myShader.GetComponent<Renderer>().material, "_GranoLija");
             if(probeBehabiour.EsteParticleSystem.isEmitting)
                 probeBehabiour.EsteParticleSystem.Stop();
             probeBehabiour.EsteParticleSystem = residuosMaterial;

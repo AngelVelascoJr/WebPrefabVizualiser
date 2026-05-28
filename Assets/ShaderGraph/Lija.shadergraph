@@ -600,6 +600,7 @@
     "m_OutputNode": {
         "m_Id": ""
     },
+    "m_SubDatas": [],
     "m_ActiveTargets": [
         {
             "m_Id": "82d9adbf6a054a35bcf12fba31e47fc1"
@@ -2490,7 +2491,7 @@
     "foldoutStates": [
         {
             "name": "Rendering Options",
-            "value": true
+            "value": false
         },
         {
             "name": "Pass Options",
